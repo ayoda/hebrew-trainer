@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Иврит-Тренажер | Учи слова легко</title>
+  <!-- Google Fonts: Montserrat (Russian & Interface), Assistant (Hebrew) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background glow circles for futuristic/premium aesthetic -->
+  <div class="glow-bg">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-emoji">🎓</span>
+        <h1>Иврит-Тренажер</h1>
+      </div>
+      <div class="header-controls">
+        <button id="sound-toggle" class="icon-btn" title="Включить/выключить звук" aria-label="Toggle Sound">
+          <span class="icon">🔊</span>
+        </button>
+        <button id="help-toggle" class="icon-btn" title="Справка" aria-label="Help">
+          <span class="icon">❓</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Screens -->
+    <main class="app-main">
+      
+      <!-- SCREEN 1: Dashboard (Level Selection) -->
+      <section id="dashboard-screen" class="screen active">
+        <div class="screen-intro">
+          <h2>Изучай иврит весело!</h2>
+          <p>База из 200 слов и предложений разделена на 20 уровней. Соединяй слова на русском языке с их произношением на иврите. Проходи уровни, зарабатывай звезды и отслеживай свой прогресс!</p>
+        </div>
+
+        <!-- Excel Source Selector Card -->
+        <div class="excel-selector-card glass-card">
+          <div class="selector-header">
+            <span class="selector-icon">📊</span>
+            <div class="selector-text">
+              <h4>Источник слов (Excel)</h4>
+              <p id="current-file-label">Текущий файл: Встроенный список (words.js)</p>
+            </div>
+          </div>
+          <div class="selector-actions">
+            <div class="select-wrapper">
+              <select id="excel-file-select" title="Выберите файл XLSX в папке проекта">
+                <option value="default">Встроенный список (words.js)</option>
+              </select>
+              <button id="btn-refresh-files" class="icon-btn-text" title="Обновить список файлов в папке">🔄 Обновить</button>
+            </div>
+            <div class="upload-wrapper">
+              <input type="file" id="excel-file-input" accept=".xlsx" style="display: none;">
+              <button id="btn-upload-file" class="secondary-btn" style="padding: 0.6rem 1.25rem; font-size: 0.85rem; border-radius: 10px;">
+                <span>📁</span> Загрузить файл с диска
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-modes">
+          <button id="btn-random-mix" class="premium-btn mode-btn">
+            <span class="btn-icon">⚡</span>
+            <div class="btn-text">
+              <span class="btn-title">Случайный Микс</span>
+              <span class="btn-desc">Случайные 10 слов со всех уровней</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="levels-section-header">
+          <h3>Карта уровней</h3>
+          <div class="overall-progress">
+            <span>Пройдено уровней: <strong id="completed-levels-count">0/20</strong></span>
+            <div class="progress-bar-mini">
+              <div id="overall-progress-fill" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Levels Grid -->
+        <div id="levels-grid" class="levels-grid">
+          <!-- Dynamically populated by script.js -->
+        </div>
+      </section>
+
+      <!-- SCREEN 2: Gameplay -->
+      <section id="game-screen" class="screen">
+        <!-- Game Header / Stats -->
+        <div class="game-header-bar">
+          <button id="btn-back-to-levels" class="back-btn">
+            <span class="arrow">←</span> Назад к уровням
+          </button>
+          
+          <div class="game-title-info">
+            <h2 id="current-level-title">Уровень 1</h2>
+            <span id="level-range-info" class="badge">Слова 1 - 10</span>
+          </div>
+
+          <div class="game-stats">
+            <div class="stat-item" title="Ошибки">
+              <span class="stat-label">Ошибки:</span>
+              <span id="stat-errors" class="stat-value error-color">0</span>
+            </div>
+            <div class="stat-item" title="Время">
+              <span class="stat-label">Время:</span>
+              <span id="stat-timer" class="stat-value">00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress bar inside game -->
+        <div class="game-progress-container">
+          <div class="game-progress-bar">
+            <div id="game-progress-fill" class="progress-fill" style="width: 0%"></div>
+          </div>
+          <span id="game-progress-text">0 / 10 совпадений</span>
+        </div>
+
+        <!-- Instructions -->
+        <div class="game-instructions">
+          <p>👉 Выберите слово в <strong>любой колонке</strong> (оно подсветится желтым), а затем найдите соответствующую пару во второй колонке.</p>
+        </div>
+
+        <!-- Game Board (Two Columns) -->
+        <div class="game-board">
+          <!-- Left Column: Russian Words -->
+          <div class="board-column" id="left-column">
+            <h3 class="column-title">Русский перевод (Колонка A)</h3>
+            <div class="buttons-container" id="russian-buttons">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Right Column: Hebrew Transcriptions -->
+          <div class="board-column" id="right-column">
+            <h3 class="column-title">Произношение (Колонка D)</h3>
+            <div class="buttons-container" id="hebrew-buttons">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower controls -->
+        <div class="game-footer">
+          <button id="btn-restart-level" class="secondary-btn">
+            <span class="icon">🔄</span> Начать заново
+          </button>
+          <button id="btn-skip-level" class="secondary-btn hide">
+            Пропустить
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>© 2026 Иврит-Тренажер. Создано на основе ИИ для быстрого запоминания.</p>
+    </footer>
+  </div>
+
+  <!-- MODAL 1: Level Completed Celebration -->
+  <div id="victory-modal" class="modal-overlay">
+    <div class="modal-content glass-card">
+      <div class="confetti-container" id="confetti-container"></div>
+      
+      <div class="modal-header">
+        <span class="victory-crown">👑</span>
+        <h2>Отличная работа!</h2>
+        <p id="victory-subtitle">Уровень успешно пройден!</p>
+      </div>
+
+      <div class="victory-stars" id="victory-stars">
+        <span class="star">★</span>
+        <span class="star">★</span>
+        <span class="star">★</span>
+      </div>
+
+      <div class="victory-stats-grid">
+        <div class="v-stat-card">
+          <span class="v-stat-val" id="v-stat-time">00:45</span>
+          <span class="v-stat-lbl">Время</span>
+        </div>
+        <div class="v-stat-card">
+          <span class="v-stat-val" id="v-stat-errors">2</span>
+          <span class="v-stat-lbl">Ошибки</span>
+        </div>
+        <div class="v-stat-card">
+          <span class="v-stat-val" id="v-stat-score">90%</span>
+          <span class="v-stat-lbl">Точность</span>
+        </div>
+      </div>
+
+      <!-- Dictionary Accordion / List for review -->
+      <div class="dictionary-review">
+        <h3>📚 Изученные слова уровня:</h3>
+        <div class="dictionary-list-wrapper">
+          <table class="dictionary-table">
+            <thead>
+              <tr>
+                <th>Русский перевод</th>
+                <th>Написание на иврите</th>
+                <th>Произношение</th>
+              </tr>
+            </thead>
+            <tbody id="victory-dictionary-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-modal-levels" class="secondary-btn">К уровням</button>
+        <button id="btn-modal-replay" class="secondary-btn">🔄 Еще раз</button>
+        <button id="btn-modal-next" class="premium-btn">Дальше ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Help / Instruction Guide -->
+  <div id="help-modal" class="modal-overlay">
+    <div class="modal-content glass-card help-content">
+      <button class="close-modal" id="btn-close-help">×</button>
+      <h2>Справка и правила игры</h2>
+      
+      <div class="help-section">
+        <h3>🎮 Как играть?</h3>
+        <ol>
+          <li>Выберите любой уровень на главном экране (каждый уровень содержит 10 фраз).</li>
+          <li>Вы можете кликнуть по любому слову в **левой** (русский) или в **правой** (транскрипция) колонке. Кнопка подсветится <span class="text-yellow">желтым</span> цветом.</li>
+          <li>Затем кликните по соответствующей паре в противоположной колонке.</li>
+          <li>Если выбор верный: обе кнопки загорятся <span class="text-green">зеленым</span> цветом, на них появится оригинальное написание слова на иврите, и они останутся зафиксированными.</li>
+          <li>Если выбор неверный: обе кнопки **мигнут красным 3 раза** и сбросят свое выделение. Количество ошибок увеличится.</li>
+          <li>Соедините все 10 пар, чтобы завершить уровень и открыть следующий!</li>
+        </ol>
+      </div>
+
+      <div class="help-section">
+        <h3>⭐ Система оценок</h3>
+        <p>Качество прохождения уровня оценивается звездами:</p>
+        <ul>
+          <li>⭐⭐⭐ (3 звезды) — безупречно (0 или 1 ошибка).</li>
+          <li>⭐⭐ (2 звезды) — хорошо (2 или 3 ошибки).</li>
+          <li>⭐ (1 звезда) — пройдено (4 или более ошибок).</li>
+        </ul>
+        <p>Ваши рекорды сохраняются автоматически в браузере. Вы всегда можете перепройти уровень, чтобы улучшить результат!</p>
+      </div>
+
+      <button id="btn-help-ok" class="premium-btn">Понятно!</button>
+    </div>
+  </div>
+
+  <!-- Audio Synthesis Service & Main Logic scripts -->
+  <script src="xlsx.mini.min.js"></script>
+  <script src="words.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
