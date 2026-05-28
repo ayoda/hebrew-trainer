@@ -646,10 +646,18 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* Enable elegant wrapping for small screens */
+  gap: 0.5rem;      /* Ensure gap between word text and correct symbols/spans */
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   min-height: 60px;
+}
+
+.btn-word-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .word-btn:hover:not(.selected):not(.correct) {
@@ -1046,8 +1054,8 @@ body {
 
 @media (max-width: 900px) {
   .game-board {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1fr 1fr; /* Keep 2 columns side-by-side */
+    gap: 1.25rem;
   }
   
   .game-header-bar {
@@ -1072,6 +1080,27 @@ body {
 }
 
 @media (max-width: 600px) {
+  .app-container {
+    padding: 0 0.5rem; /* Maximize screen space on mobile */
+  }
+
+  .game-board {
+    grid-template-columns: 1fr 1fr; /* Keep 2 columns side-by-side on mobile */
+    gap: 0.5rem; /* Minimal gap between columns */
+  }
+
+  .column-title {
+    font-size: 0.75rem; /* Much smaller font size for columns on mobile */
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
+
+  .buttons-container {
+    gap: 0.5rem; /* Tighter button spacing */
+  }
+
   .victory-stats-grid {
     grid-template-columns: 1fr;
   }
@@ -1089,14 +1118,34 @@ body {
   }
   
   .word-btn {
-    padding: 0.9rem 1.1rem;
-    font-size: 0.95rem;
-    min-height: 50px;
+    padding: 0.5rem 0.6rem; /* Minimal padding for mobile buttons to fit longer words */
+    font-size: 0.85rem; /* Smaller text size for word buttons */
+    min-height: 48px;
+    flex-wrap: wrap; /* Let Hebrew reveal wrap beautifully if short on space */
+    gap: 0.25rem;
+    border-width: 1px;
+    border-radius: 8px;
+  }
+
+  .word-btn:hover:not(.selected):not(.correct) {
+    transform: translateY(-2px); /* Vertical hover effect to avoid horizontal screen shifts */
+  }
+  
+  #right-column .word-btn:hover:not(.selected):not(.correct) {
+    transform: translateY(-2px); /* Vertical hover effect to avoid horizontal screen shifts */
   }
   
   .word-btn .hebrew-reveal {
-    font-size: 1.05rem;
-    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    margin-left: 0;
+    padding: 0.05rem 0.25rem;
+    border-radius: 4px;
+    align-self: flex-end;
+  }
+
+  .word-btn.correct::after {
+    font-size: 1rem;
+    margin-left: 0.25rem;
   }
 }
 
